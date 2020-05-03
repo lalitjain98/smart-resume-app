@@ -12,16 +12,15 @@ import Box from '@material-ui/core/Box';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Loading from '../../common/Loading';
+import Loading from '../common/Loading';
 import Skill from './Skill';
-import Actions from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'relative',
     padding: theme.spacing(1),
     margin: `${theme.spacing(1)}px 0`,
-    border: `1px solid ${theme.palette.primary.main}`,
+    // border: `1px solid ${theme.palette.primary.main}`,
     [theme.breakpoints.up('sm')]: {
       margin: theme.spacing(2),
       padding: theme.spacing(2),
@@ -80,33 +79,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SkillsContainer(props) {
-  const { skills = [], getAllSkillsLoading, getAllSkillsError } = props || {};
+  const { skills = [] } = props || {};
   
   const classes = useStyles();
 
-  const handleSkillItemClick = (id) => {
-    console.log('skill', id);
-    // Router.push(`/dashboard/manage-resume?skillId=${id}`);
-  };
-
-  const handleSkillItemDeleteClick = (id) => {
-    console.log('Delete skill', id);
-    // Router.push(`/dashboard/manage-resume?skillId=${id}`);
-  };
-
-  if (getAllSkillsLoading) return <Loading />;
-  if (getAllSkillsError) return <div>{getAllSkillsError}</div>;
   return (
     <div onClick={props.onClick}>
       {/* <TouchRipple> */}
-      <Paper className={`with-edit-on-hover ${classes.paper}`} elevation={0}>
-        {/* {
-          false && (
-            <IconButton aria-label="close" className={`edit-on-hover ${classes.edit} ${classes.small}`} onClick={editSkillsSection}>
-              <EditIcon className={classes.small} />
-            </IconButton>
-          )
-        } */}
+      <Paper className={`with-edit-on-hover ${classes.paper}`} elevation={5}>
         <Grid container>
           <Grid item xs={12}>
             <Typography className={classes.title}>
@@ -120,17 +100,15 @@ function SkillsContainer(props) {
             skills && skills.length === 0 ? (
               <Grid item xs={12} className={classes.emptyListText}>
                 <Box textAlign="center">
-                  No Skills Added Yet!
+                  {/* No Skills Added Yet! */}
                 </Box>
               </Grid>
             )
               : (
                 <Box className={classes.listContainer}>
                   {
-                    skills.map((item) => (
+                    (skills).map((item) => (
                       <Skill
-                        onClick={() => handleSkillItemClick(item.id)}
-                        handleDelete={handleSkillItemDeleteClick}
                         key={item.id}
                         {...item}
                       />
@@ -151,14 +129,12 @@ SkillsContainer.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  ...state.manageResume,
-  showSkillFormModal: state.manageResume.showSkillFormModal,
-  currentSkillItemId: state.manageResume.currentSkillItemId,
+  ...state.userPage,
+  resumeSections: state.userPage.data.resumeSections,
+  skills: state.userPage.data.skills,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setShowSkillFormModal: (showModal) => dispatch(Actions.manageResume.setShowSkillFormModal(showModal)),
-  setCurrentSkillItemId: (id) => dispatch(Actions.manageResume.setCurrentSkillItemId(id)),
 });
 
 

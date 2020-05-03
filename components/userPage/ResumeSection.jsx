@@ -1,6 +1,9 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import Router from 'next/router';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
@@ -9,24 +12,28 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import { startCase } from 'lodash';
+import Avatar from '@material-ui/core/Avatar';
+import FaceIcon from '@material-ui/icons/Face';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Loading from '../../common/Loading';
-import Skill from './Skill';
-import Actions from '../../../redux/actions';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
+
+import Loading from '../common/Loading';
+import Experience from './resumeSection/Experience';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'relative',
     padding: theme.spacing(1),
     margin: `${theme.spacing(1)}px 0`,
-    border: `1px solid ${theme.palette.primary.main}`,
     [theme.breakpoints.up('sm')]: {
       margin: theme.spacing(2),
       padding: theme.spacing(2),
     },
-    // cursor: (props) => props.cursor,
+    cursor: (props) => props.cursor,
     '&:hover': {
       boxShadow: (props) => props.cursor === 'pointer' && `0 0 ${theme.spacing(2)}px 0 ${theme.palette.grey[500]}`,
     },
@@ -70,74 +77,49 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.75rem',
     fontStyle: 'italic',
   },
-  listContainer: {
-    paddingTop: theme.spacing(1),
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-  },
 }));
 
-function SkillsContainer(props) {
-  const { skills = [], getAllSkillsLoading, getAllSkillsError } = props || {};
-  
+function Index(props) {
+  const { title = '', experiences = [] } = props || {};
+
   const classes = useStyles();
 
-  const handleSkillItemClick = (id) => {
-    console.log('skill', id);
-    // Router.push(`/dashboard/manage-resume?skillId=${id}`);
-  };
 
-  const handleSkillItemDeleteClick = (id) => {
-    console.log('Delete skill', id);
-    // Router.push(`/dashboard/manage-resume?skillId=${id}`);
-  };
-
-  if (getAllSkillsLoading) return <Loading />;
-  if (getAllSkillsError) return <div>{getAllSkillsError}</div>;
   return (
     <div onClick={props.onClick}>
       {/* <TouchRipple> */}
-      <Paper className={`with-edit-on-hover ${classes.paper}`} elevation={0}>
-        {/* {
-          false && (
-            <IconButton aria-label="close" className={`edit-on-hover ${classes.edit} ${classes.small}`} onClick={editSkillsSection}>
-              <EditIcon className={classes.small} />
-            </IconButton>
-          )
-        } */}
+      <Paper className={`with-edit-on-hover ${classes.paper}`} elevation={5}>
         <Grid container>
           <Grid item xs={12}>
             <Typography className={classes.title}>
-              Skills
+              {title}
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Divider />
           </Grid>
           {
-            skills && skills.length === 0 ? (
+            experiences && experiences.length === 0 ? (
               <Grid item xs={12} className={classes.emptyListText}>
                 <Box textAlign="center">
-                  No Skills Added Yet!
+                  No Experiences in this Section
                 </Box>
               </Grid>
-            )
-              : (
-                <Box className={classes.listContainer}>
-                  {
-                    skills.map((item) => (
-                      <Skill
-                        onClick={() => handleSkillItemClick(item.id)}
-                        handleDelete={handleSkillItemDeleteClick}
-                        key={item.id}
-                        {...item}
-                      />
-                    ))
-                  }
-                </Box>
-              )
+            ) : experiences.map((item, index) => (
+              // <Grid item xs={12} key={item.id}>
+              <Experience
+                key={item.id}
+                {...item}
+                wrapperComponent={Grid}
+                nextSibling={(index + 1 < experiences.length) && (
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                )}
+                wrapperComponentProps={{ xs: 12, item: true }}
+              />
+              // </Grid>
+            ))
           }
         </Grid>
       </Paper>
@@ -146,20 +128,10 @@ function SkillsContainer(props) {
   );
 }
 
-SkillsContainer.propTypes = {
-
-};
-
 const mapStateToProps = (state) => ({
-  ...state.manageResume,
-  showSkillFormModal: state.manageResume.showSkillFormModal,
-  currentSkillItemId: state.manageResume.currentSkillItemId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setShowSkillFormModal: (showModal) => dispatch(Actions.manageResume.setShowSkillFormModal(showModal)),
-  setCurrentSkillItemId: (id) => dispatch(Actions.manageResume.setCurrentSkillItemId(id)),
 });
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(SkillsContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

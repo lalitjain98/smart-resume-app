@@ -5,6 +5,7 @@ import userDashboard from './userDashboard';
 import window from './window';
 import navbar from './navbar';
 import manageResume from './manageResume';
+import userPage from './userPage';
 
 export default {
   auth,
@@ -14,4 +15,5 @@ export default {
   window,
   navbar,
   manageResume,
+  userPage,
 }

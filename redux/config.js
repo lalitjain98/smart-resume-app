@@ -20,7 +20,7 @@ function crossSliceReducer(state, action) {
     if (payload && payload._persist && payload._persist.version >= process.env.BUILD_ID) {
       return action.payload;
     }
-    if (window.location.pathname !== '/') setTimeout(() => window.location.replace('/'), 300);
+    // if (window.location.pathname !== '/') setTimeout(() => window.location.replace('/'), 300);
     return newState;
   }
   default:

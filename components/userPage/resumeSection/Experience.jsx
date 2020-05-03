@@ -16,8 +16,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 
-import Loading from '../../../common/Loading';
-import Actions from '../../../../redux/actions';
+import Loading from '../../common/Loading';
+import Actions from '../../../redux/actions';
 import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     ...theme.typography.body2,
-    marginBottom: theme.spacing(1),
   },
   avatar: {
     marginTop: theme.spacing(1),
@@ -75,35 +74,22 @@ const useStyles = makeStyles((theme) => ({
   },
   linkText: {
     fontWeight: theme.typography.fontWeightMedium,
-  },
-  linkUrl: {
+    cursor: 'pointer',
     color: theme.palette.primary.main,
-    // textDecoration: 'underline',
+    textDecoration: 'underline',
   },
 }));
 
 function Index(props) {
   const classes = useStyles();
   const {
-    allowEdit = false, wrapperComponent: WrapperComponent, wrapperComponentProps = {}, nextSibling,
-    title, subtitle, startDate, endDate, description='', linkUrl, linkText, grade, maxGrade
+    wrapperComponent: WrapperComponent, wrapperComponentProps = {}, nextSibling,
+    title, subtitle, startDate, endDate, description='', linkUrl, linkText, grade, maxGrade,
+    openLink,
   } = props;
-
-  const editExperience = (e) => {
-    e.stopPropagation();
-    props.setCurrentExperienceItemId(props.id);
-    props.setShowExperienceFormModal(true);
-  };
 
   const returnVal = (
     <Box className={`with-edit-on-hover ${classes.box}`}>
-      {
-        allowEdit && (
-          <IconButton onClick={editExperience} className={`edit-on-hover ${classes.edit} ${classes.small}`}>
-            <EditIcon fontSize="small" className={classes.small} />
-          </IconButton>
-        )
-      }
       <Grid container>
         {
           startDate && (
@@ -136,15 +122,12 @@ function Index(props) {
           {(description || '').split('\n').map((d, index) => <Typography className={classes.content} key={index}>{d}</Typography>)}
         </Grid>
         {
-          linkText && (
+          linkUrl && (
             <>
               <br />
               <Grid item xs={12}>
-                <Typography component="span" className={classes.linkText}>
-                  {`Link: ${linkText} `}
-                </Typography>
-                <Typography component="span" className={classes.linkUrl}>
-                  {`(${linkUrl})`}
+                <Typography component="span" className={classes.linkText} onClick={() => openLink(linkUrl)}>
+                  { linkText }
                 </Typography>
               </Grid>
             </>
@@ -153,7 +136,7 @@ function Index(props) {
       </Grid>
     </Box>
   );
-
+  
   return WrapperComponent ? (
     <WrapperComponent {...wrapperComponentProps}>
       {returnVal}
@@ -164,13 +147,10 @@ function Index(props) {
 
 const mapStateToProps = (state) => ({
   ...state.userDashboard,
-  showExperienceFormModal: state.manageResume.showExperienceFormModal,
-  currentExperienceItemId: state.manageResume.currentExperienceItemId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setShowExperienceFormModal: (showModal) => dispatch(Actions.manageResume.setShowExperienceFormModal(showModal)),
-  setCurrentExperienceItemId: (id) => dispatch(Actions.manageResume.setCurrentExperienceItemId(id)),
+  openLink: (linkUrl) => dispatch(Actions.userPage.setUserLinkUrl(linkUrl)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

@@ -11,11 +11,11 @@ import UserDetailInfoCard from './UserDetailInfoCard';
 
 function Profile(props) {
   return (
-    <Grid container>
-      <Grid item xs={12} sm={6} md={4}>
+    <Grid container direction="column" alignItems="center">
+      <Grid item xs={12} sm={6} md={8}>
         <UserBasicInfoCard />
       </Grid>
-      <Grid item xs={12} sm={6} md={8}>
+      <Grid item xs={12} md={10}>
         <UserDetailInfoCard />
       </Grid>
     </Grid>

@@ -12,14 +12,14 @@ export const Index = (props) => {
   return (
     <Profile />
   );
-}
+};
 
 const mapStateToProps = (state) => ({
   activeMenuBarOption: state.userDashboard.activeMenuBarOption,
-})
+});
 
 const mapDispatchToProps = (dispatch) => ({
   setActiveOption: (option) => dispatch(Actions.userDashboard.setMenuBarOption(option)),
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

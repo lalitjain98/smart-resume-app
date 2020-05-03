@@ -34,7 +34,9 @@ const Layout = (props) => {
       router.push('/dashboard');
     }
     console.log(token, router.pathname)
-    if (!token && !['/', '/auth'].includes(router.pathname)) {
+    // if (!token && !['/', '/auth'].includes(router.pathname)) {
+    if (!token && router.pathname.startsWith('/dashboard')) {
+      console.log("Unauthorized!!");
       router.push('/auth');
     }
   }, [router.pathname]);

@@ -17,10 +17,10 @@ import MailOutlineSharp from '@material-ui/icons/MailOutlineSharp';
 import PhoneSharpIcon from '@material-ui/icons/PhoneSharp';
 import IconButton from '@material-ui/core/IconButton';
 import classnames from 'classnames';
-import Loading from '../../common/Loading';
-import Actions from '../../../redux/actions';
-import UserDetailInfoFormModal from './UserDetailInfoFormModal';
-import EmptyContentText from '../../common/EmptyContentText';
+import Loading from '../common/Loading';
+import Actions from '../../redux/actions';
+import EmptyContentText from '../common/EmptyContentText';
+import Link from 'next/link';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -28,26 +28,48 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0),
     padding: theme.spacing(1),
     marginTop: theme.spacing(8),
-    paddingTop: theme.spacing(1),
+    paddingTop: theme.spacing(5),
     [theme.breakpoints.up('sm')]: {
       position: 'relative',
       margin: theme.spacing(2),
       padding: theme.spacing(2),
       marginTop: theme.spacing(10),
-      paddingTop: theme.spacing(1),
+      paddingTop: theme.spacing(5),
     },
   },
   grid: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    padding: theme.spacing(1),
+    margin: theme.spacing(1),
     position: 'relative',
   },
   title: {
     fontWeight: 'bold',
-    marginBottom: theme.spacing(1),
+    // marginBottom: theme.spacing(1),
     marginTop: theme.spacing(1),
     // fontSize: theme.typography.h6
+  },
+  avatarWrapper: {
+    position: 'absolute',
+    top: `-${theme.spacing(5)}px`,
+    left: 0,
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  avatarEdit: {
+    top: `-${theme.spacing(2)}px !important`,
+    right: `-${theme.spacing(4)}px !important`,
+  },
+  userAvatar: {
+    margin: `${theme.spacing(1)}px auto`,
+    width: theme.spacing(10),
+    height: theme.spacing(10),
+    // backgroundImage: ({ avatarUrl }) => (avatarUrl ? `url(${avatarUrl})` : 'transparent'),
+    // backgroundPosition: 'center 25%',
+    // backgroundRepeat: 'no-repeat',
+    // display: 'block',
   },
   avatar: {
     marginTop: theme.spacing(1),
@@ -78,85 +100,99 @@ const useStyles = makeStyles((theme) => ({
   },
   centered: {
     textAlign: 'center',
+    justifyContent: 'center',
   },
-  justified: {
-    textAlign: 'justify',
+  headline: {
+    fontStyle: 'italic',
+    fontSize: '1.1rem',
+    fontWeight: theme.typography.fontWeightMedium,
+    color: theme.palette.grey[900],
+    justifyContent: 'center',
+  },
+  username: {
+    color: theme.palette.primary.main,
   },
 }));
 
 
 function Index(props) {
-  const {
-    user, showUserDetailInfoFormModal, loadUserLoading, loadUserError,
-  } = props || {};
+  const { user = {} } = props || {};
 
   const classes = useStyles({ avatarUrl: user && user.avatarUrl });
 
   return (
-    <Paper className={classes.paper} elevation={1}>
-      {
-        loadUserLoading && <Loading />
-      }
+    <Paper className={classes.paper} elevation={5}>
       {
         user && (
           <>
-            <UserDetailInfoFormModal />
+            <Box className={classes.avatarWrapper}>
+
+              <Box className={classes.avatarContainer}>
+                <Avatar
+                  className={classes.userAvatar}
+                  src={user.avatarUrl}
+                />
+              </Box>
+
+            </Box>
 
             <Grid container className={classes.grid}>
-              <Avatar className={classes.edit}>
-                <EditIcon className={classes.small} onClick={() => props.setShowUserDetailInfoFormModal(true)} />
-              </Avatar>
               <Grid className={classnames(classes.gridItem, classes.centered)} item xs={12}>
                 <Typography variant="subtitle1" className={classes.title}>
-                  {'About Me'}
+                  {startCase(`${user.firstName} ${user.lastName}`)}
                 </Typography>
               </Grid>
               <Divider />
-              <Grid className={classnames(classes.gridItem, classes.justified)} item xs={12}>
+
+              <Grid className={classnames(classes.centered)} item xs={12}>
                 {
-                  user.aboutMe ? (
-                    <Typography variant="subtitle2" className={classes.withIcon}>
-                      {user.aboutMe}
+                  user.username ? (
+                    <Typography variant="subtitle2" className={classnames(classes.withIcon, classes.centered, classes.username)}>
+                      <Link href={`/${user.username}`}>
+                        {`@${user.username}`}
+                      </Link>
                     </Typography>
                   ) : (
-                    <EmptyContentText customText={"Brand yourself here!"}/>
-                  )
-                }
-              </Grid>
-              <Grid className={classes.gridItem} item xs={12}>
-                {
-                  user.country ? (
-                    <Typography variant="subtitle2" className={classes.withIcon}>
-                      {`Location: ${user.city}${user.city && ', '}${user.country}`}
-                    </Typography>
-                  ) : (
-                    <EmptyContentText label="Your Location" />
-                  )
-                }
-              </Grid>
-              <Grid className={classes.gridItem} item xs={12}>
-                {
-                  user.altEmail ? (
-                    <Typography variant="subtitle2" className={classes.withIcon}>
-                      {`Alt. E-mail: ${user.altEmail}`}
-                    </Typography>
-                  ) : (
-                    <EmptyContentText label="Alternate E-mail" />
-                  )
-                }
-              </Grid>
-              <Grid className={classnames(classes.gridItem, classes.centered)} item xs={12}>
-                {
-                  user.altMobileNumber ? (
-                    <Typography variant="subtitle2" className={classes.withIcon}>
-                      {`Alt. Mobile Number: ${user.altMobileNumber}`}
-                    </Typography>
-                  ) : (
-                    <EmptyContentText label="Alternate Mobile Number" />
+                    <EmptyContentText label="Username" />
                   )
                 }
               </Grid>
 
+              <Grid className={classnames(classes.gridItem, classes.centered)} item xs={12}>
+                {
+                  user.headline ? (
+                    <Typography variant="subtitle2" className={classnames(classes.withIcon, classes.centered, classes.headline)}>
+                      {user.headline}
+                    </Typography>
+                  ) : (
+                    <EmptyContentText label="Headline" />
+                  )
+                }
+              </Grid>
+              <Grid className={classes.gridItem} item xs={12}>
+                {
+                  user.email ? (
+                    <Typography variant="subtitle2" className={classes.withIcon}>
+                      <MailOutlineSharp className={classes.small} />
+                      {user.email}
+                    </Typography>
+                  ) : (
+                    <EmptyContentText label="E-mail" />
+                  )
+                }
+              </Grid>
+              <Grid className={classes.gridItem} item xs={12}>
+                {
+                  user.mobileNumber ? (
+                    <Typography variant="subtitle2" className={classes.withIcon}>
+                      <PhoneSharpIcon className={classes.small} />
+                      {user.mobileNumber || ''}
+                    </Typography>
+                  ) : (
+                    <EmptyContentText label="Mobile Number" />
+                  )
+                }
+              </Grid>
             </Grid>
           </>
         )
@@ -167,37 +203,10 @@ function Index(props) {
 }
 
 const mapStateToProps = (state) => ({
-  ...state.userDashboard,
-  user: state.user.data,
-  loadUserLoading: state.user.loadUserLoading,
-  loadUserError: state.user.loadUserError,
-  showUserDetailInfoFormModal: state.user.showUserDetailInfoFormModal,
+  ...state.userPage,
+  user: state.userPage.data,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  setShowUserDetailInfoFormModal:
-    (showModal) => dispatch(Actions.user.setShowUserDetailInfoFormModal(showModal)),
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
-
-// import React from 'react';
-// import { connect } from 'react-redux';
-
-// function Index(props) {
-//   return (
-//     <>
-//       UserDetailInfoCard
-//     </>
-//   );
-// }
-
-// const mapStateToProps = (state) => ({
-//   ...state.userDashboard,
-// });
-
-// const mapDispatchToProps = (dispatch) => ({
-
-// });
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Index);

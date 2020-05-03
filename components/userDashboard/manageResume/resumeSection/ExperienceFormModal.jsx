@@ -16,12 +16,15 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Actions from '../../../../redux/actions';
 
 import { MuiPickersUtilsProvider, DatePicker, KeyboardDatePicker } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import DateFnsUtils from '@date-io/date-fns';
 import moment from 'moment';
+import Actions from '../../../../redux/actions';
+import ExperienceValidation from '../../../../validations/experience';
+import api from '../../../../api';
+import Swal from 'sweetalert2';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
@@ -66,19 +69,70 @@ const ExperienceFormModal = (props) => {
   const [startDate, setStartDate] = React.useState(moment());
   const [endDate, setEndDate] = React.useState(moment());
   const [description, setDescription] = React.useState('');
-  
+
   const [linkUrl, setLinkUrl] = React.useState('');
   const [linkText, setLinkText] = React.useState('');
   const [grade, setGrade] = React.useState('');
   const [maxGrade, setMaxGrade] = React.useState('');
-  
+  const [isStartDateInputOpen, setIsStartDateInputOpen] = React.useState(false);
+  const [isEndDateInputOpen, setIsEndDateInputOpen] = React.useState(false);
+
+  const [errors, setErrors] = React.useState({});
+
   const { open, setOpen, save } = props;
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    save({ title, subtitle, startDate, endDate, description, linkUrl, linkText });
+  const validate = async () => {
+    try {
+      const valid = await ExperienceValidation.validate(
+        {
+          title, subtitle, startDate, endDate, description, linkUrl, linkText,
+        },
+        { abortEarly: false },
+      );
+      setErrors({});
+      return {};
+      // valid;
+      // console.log(valid);
+    } catch (validationErrors) {
+      // console.log(validationErrors)
+      const allErrors = validationErrors.inner
+        .reduce((errors, currentValidation) => Object.assign(errors, {
+          [currentValidation.path]: currentValidation.errors[0],
+        }), {});
+      setErrors(allErrors);
+      // console.log('allErrors', allErrors)
+      return allErrors;
+    }
+  };
+  const saveData = () => {
+    save({
+      title, subtitle, startDate, endDate, description, linkUrl, linkText,
+    });
     handleClose();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = await validate();
+    if (!(Object.keys(errs).length)) {
+      const canLoadLinkUrlInIframeRes = await api('/url/can-load-in-iframe', 'GET', null, { linkUrl });
+      const canLoadLinkUrlInIframe = canLoadLinkUrlInIframeRes.data;
+      if (!canLoadLinkUrlInIframe) {
+        console.log("This Url Can't be opened in  popup!, A new tab will open when link is clicked.");
+        Swal.fire({
+          title: 'Just One Little Problem!',
+          text: 'This Url Can\'t be opened in  popup!, A new tab will open when link is clicked.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Okay',
+          cancelButtonText: 'Change Link',
+        }).then((result) => {
+          console.log(result);
+          if (!result.value) saveData();
+        });
+      }
+    }
   };
 
   const theme = useTheme();
@@ -87,11 +141,13 @@ const ExperienceFormModal = (props) => {
   React.useEffect(() => {
     if (props.currentExperienceItemId) {
       const currentSectionItem = props.resumeSections.find((item) => item.id == props.currentResumeSectionItemId);
-      console.log(currentSectionItem)
+      console.log(currentSectionItem);
       // if (!currentSectionItem) Router.push('/dashboard/manage-resume');
       const currentExperienceItem = currentSectionItem && currentSectionItem.experiences.find((item) => item.id == props.currentExperienceItemId);
       if (currentExperienceItem) {
-        const { title, subtitle, startDate, endDate, description, linkUrl, linkText } = currentExperienceItem || {};
+        const {
+          title, subtitle, startDate, endDate, description, linkUrl, linkText,
+        } = currentExperienceItem || {};
         setTitle(title);
         setSubtitle(subtitle);
         setStartDate(moment(startDate));
@@ -100,8 +156,7 @@ const ExperienceFormModal = (props) => {
         setLinkUrl(linkUrl);
         setLinkText(linkText);
       }
-    } 
-    else {
+    } else {
       // console.log("Resetting Form Values")
       setTitle('');
       setSubtitle('');
@@ -111,8 +166,24 @@ const ExperienceFormModal = (props) => {
       setLinkUrl('');
       setLinkText('');
     }
-
   }, [props.currentExperienceItemId]);
+
+  const handleStartDateInputChange = async (date) => {
+    await setStartDate(date);
+  };
+
+  const handleEndDateInputChange = async (date) => {
+    await setEndDate(date);
+  };
+
+  const handleChange = async (cb, val) => {
+    await cb(val);
+    // validate();
+  };
+
+  React.useEffect(() => {
+    validate();
+  }, [title, subtitle, startDate, endDate, description, linkUrl, linkText]);
 
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -136,7 +207,7 @@ const ExperienceFormModal = (props) => {
         </DialogTitle>
         <DialogContent>
 
-          <form className={classes.form} noValidate onSubmit={handleSubmit}>
+          <form className={classes.form} onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -149,7 +220,9 @@ const ExperienceFormModal = (props) => {
                   name="title"
                   autoComplete="off"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => handleChange(setTitle, e.target.value)}
+                  error={errors.title}
+                  helperText={errors.title}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -163,33 +236,51 @@ const ExperienceFormModal = (props) => {
                   name="subtitle"
                   autoComplete="off"
                   value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
+                  onChange={(e) => handleChange(setSubtitle, e.target.value)}
+                  error={errors.subtitle}
+                  helperText={errors.subtitle}
                 />
               </Grid>
 
               <Grid item xs={12}>
                 <KeyboardDatePicker
                   autoOk
+                  // open={isStartDateInputOpen}
+                  // onFocus={() => setIsStartDateInputOpen(true)}
+                  // onBlur={() => setIsStartDateInputOpen(false)}
+                  openTo="year"
+                  views={["year", "month"]}
                   variant="inline"
                   inputVariant="outlined"
                   label="Start Date"
-                  format="DD MMM, YYYY"
+                  // format="DD MMM, YYYY"
+                  format="MMM, YYYY"
                   value={startDate}
-                  InputAdornmentProps={{ position: "start" }}
-                  onChange={(date) => setStartDate(date)}
+                  InputAdornmentProps={{ position: 'start' }}
+                  onChange={handleStartDateInputChange}
+                  error={errors.startDate}
+                  helperText={errors.startDate}
                 />
               </Grid>
 
               <Grid item xs={12}>
                 <KeyboardDatePicker
                   autoOk
+                  // open={isEndDateInputOpen}
+                  // onFocus={() => setIsEndDateInputOpen(true)}
+                  // onBlur={() => setIsEndDateInputOpen(false)}
+                  openTo="year"
+                  views={["year", "month"]}
                   variant="inline"
                   inputVariant="outlined"
                   label="End Date"
-                  format="DD MMM, YYYY"
+                  // format="DD MMM, YYYY"
+                  format="MMM, YYYY"
                   value={endDate}
-                  InputAdornmentProps={{ position: "start" }}
-                  onChange={(date) => setEndDate(date)}
+                  InputAdornmentProps={{ position: 'start' }}
+                  onChange={handleEndDateInputChange}
+                  error={errors.endDate}
+                  helperText={errors.endDate}
                 />
               </Grid>
 
@@ -205,7 +296,9 @@ const ExperienceFormModal = (props) => {
                   name="description"
                   autoComplete="off"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => handleChange(setDescription, e.target.value)}
+                  error={errors.description}
+                  helperText={errors.description}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -219,7 +312,9 @@ const ExperienceFormModal = (props) => {
                   name="linkUrl"
                   autoComplete="off"
                   value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onChange={(e) => handleChange(setLinkUrl, e.target.value)}
+                  error={errors.linkUrl}
+                  helperText={errors.linkUrl}
                 />
               </Grid>
 
@@ -234,7 +329,9 @@ const ExperienceFormModal = (props) => {
                   name="linkText"
                   autoComplete="off"
                   value={linkText}
-                  onChange={(e) => setLinkText(e.target.value)}
+                  onChange={(e) => handleChange(setLinkText, e.target.value)}
+                  error={errors.linkText}
+                  helperText={errors.linkText}
                 />
               </Grid>
 

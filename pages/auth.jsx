@@ -21,7 +21,17 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import ReactCardFlip from 'react-card-flip';
+// import { throttle, debounce } from 'throttle-debounce';
+import { throttle, debounce } from 'lodash';
 import Actions from '../redux/actions';
+import api from '../api';
+import dynamic from 'next/dynamic'
+
+const MuiPhoneInput = dynamic(
+  () => import('material-ui-phone-number'),
+  { ssr: false }
+)
+
 
 function Copyright() {
   return (
@@ -38,7 +48,7 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    minHeight: '100vh',
   },
   image: {
     backgroundImage: 'url(https://source.unsplash.com/random)',
@@ -69,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-  }
+  },
 }));
 
 
@@ -77,17 +87,20 @@ const Auth = ({
   token, loginLoading, loginError, user, attemptLogin, attemptSignUp, signUpLoading, signUpError,
 }) => {
   const [email, setEmail] = React.useState('');
+  const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
-  const [mobileNumber, setMobileNumber] = React.useState('');
+  const [mobileNumber, setMobileNumber] = React.useState('+1 99993-06397');
   const [dateOfBirth, setDateOfBirth] = React.useState(new Date());
   const [showLoginForm, setShowLoginForm] = React.useState(true);
+  const [isUsernameAvailable, setIsUsernameAvailable] = React.useState(true);
 
   const toggleLoginForm = () => {
     setFirstName('');
     setLastName('');
     setEmail('');
+    setUsername('');
     setPassword('');
     setMobileNumber('');
     setDateOfBirth(new Date());
@@ -101,7 +114,7 @@ const Auth = ({
       attemptLogin(email, password);
     } else {
       attemptSignUp({
-        firstName, lastName, email, password, mobileNumber, dateOfBirth,
+        firstName, lastName, email, username, password, mobileNumber, dateOfBirth,
       });
     }
   };
@@ -113,8 +126,50 @@ const Auth = ({
   }, [token]);
 
   React.useEffect(() => {
-    
-  }, [signUpLoading, signUpError])
+
+  }, [signUpLoading, signUpError]);
+
+  const checkIsUsernameAvailable = async (val) => {
+    try {
+      console.log(val);
+      const res = await api('/auth/check-username-available', 'GET', null, { username: val });
+      console.log(res);
+      if (res && res.status >= 200 && res.status < 400) {
+        const { data } = res;
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return false;
+  };
+
+  const verifyUsernameAvailable = async (value) => {
+    const isAvailable = await checkIsUsernameAvailable(value);
+    setIsUsernameAvailable(isAvailable);
+
+    // if (!isCheckingUsername) {
+    //   setIsCheckingUsername(true);
+    //   const timer = setTimeout(() => {
+    //     clearTimeout(checkUsernameTimer);
+    //     setCheckUsernameTimer(timer);
+    //     checkIsUsernameAvailable(value);
+    //   }, 1000);
+    // }
+  };
+
+  const verifyUsernameAvailableDebounce = debounce(verifyUsernameAvailable, 500);
+  const verifyUsernameAvailableThrottle = throttle(verifyUsernameAvailable, 500);
+
+  const handleUsernameChange = (val) => {
+    setUsername(val);
+    verifyUsernameAvailableThrottle(val);
+  };
+
+  const handleOnPhoneChange = (val, { name, dialCode, countryCode }) => {
+    console.log(val);
+    setMobileNumber(val);
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -128,7 +183,7 @@ const Auth = ({
           <Typography component="h1" variant="h5">
             {showLoginForm ? 'Log In' : 'Sign Up'}
           </Typography>
-          <form className={classes.form} noValidate onSubmit={handleSubmit}>
+          <form className={classes.form} onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               {
                 !showLoginForm && (
@@ -160,9 +215,36 @@ const Auth = ({
                         onChange={(e) => setLastName(e.target.value)}
                       />
                     </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="off"
+                        value={username}
+                        onChange={(e) => handleUsernameChange(e.target.value)}
+                        error={!isUsernameAvailable}
+                        helperText={!isUsernameAvailable && 'Username Not Available'}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <MuiPhoneInput 
+                        defaultCountry={'in'} 
+                        onChange={handleOnPhoneChange}
+                        variant="outlined"
+                        required
+                        fullWidth
+                        value={mobileNumber}
+                        autoFormat={false}
+                      />
+                    </Grid>
                   </>
                 )
               }
+              
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -176,6 +258,7 @@ const Auth = ({
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"

@@ -2,6 +2,20 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { API_HOSTNAME } from '../constants/api';
 
+// const makeRequestCreator = () => {
+//   let call;
+//   return url => {
+//     if (call) {
+//       call.cancel("Only one request allowed at a time.");
+//     }
+//     call = axios.CancelToken.source();
+//     return axios.get(url, {
+//       cancelToken: call.token
+//     });
+//   };
+// };
+// const get = makeRequestCreator();
+
 const api = (endpoint = '', method = 'GET', data = null, params = null) => new Promise((resolve, reject) => {
   try {
     const headers = {};

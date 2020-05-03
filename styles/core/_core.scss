@@ -9,20 +9,50 @@ html {
     margin: 0 !important;
     padding: 0 !important;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: #eee;
   }
 }
 
-.with-edit-on-hover {
-  &>.edit-on-hover {
-    display: none;
-    // height: 0;
-    // overflow: hidden;
-  }
-  &:hover {
+@media screen and (min-width: 960px) {
+
+  .with-edit-on-hover {
     &>.edit-on-hover {
-      display: block;
-      // height: auto;  
-      // overflow: auto;
+      display: none;
+      // height: 0;
+      // overflow: hidden;
+    }
+    &:hover {
+      &>.edit-on-hover {
+        display: block;
+        // height: auto;  
+        // overflow: auto;
+      }
     }
   }
+
+
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.swal2-container {
+  z-index: 1301 !important;
 }

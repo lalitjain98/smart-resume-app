@@ -18,6 +18,8 @@ import RouteChangeLoader from '../components/common/RouteChangeLoader';
 import AppTheme from '../theme/Index';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Layout from '../components/layout/Layout';
+import 'react-images-uploader/styles.css';
+import 'react-images-uploader/font.css';
 
 class MyApp extends App {
   // Only uncomment this method if you have blocking data requirements for
@@ -61,7 +63,7 @@ class MyApp extends App {
     };
 
   handleRouteChangeStart = (url) => {
-    console.log(`Loading: ${url}`, Router.pathname)
+    console.log(`Loading: ${url} from`, Router.pathname)
     const { store: { dispatch, getState } } = this.props;
     // console.log(getState())
     if(!getState().window.loading) {
@@ -87,7 +89,7 @@ class MyApp extends App {
   }
 
   componentDidMount() {
-    console.log(PORT, getConfig());
+    // console.log(PORT, getConfig());
     Router.events.on('routeChangeStart', this.handleRouteChangeStart)
     Router.events.on('routeChangeComplete', this.handleRouteChangeComplete)
     Router.events.on('routeChangeError', this.handleRouteChangeError)

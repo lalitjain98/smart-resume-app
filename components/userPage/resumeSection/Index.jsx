@@ -45,40 +45,13 @@ function ResumeSectionDetail(props) {
     resumeSections, getAllResumeSections, getAllResumeSectionsLoading, getAllResumeSectionsError,
   } = props;
 
-  React.useEffect(() => {
-    
-  }, []);
-
-  if (getAllResumeSectionsLoading) {
-    return <Loading />;
-  }
-
-  React.useEffect(() => {
-    console.log('Search for', props.id, 'in', resumeSections);
-    const arr = resumeSections.filter((item) => item.id == props.id);
-    console.log('Resume Sections Array Filtered', arr);
-    if (arr.length) {
-      setThisResumeSection(arr[0]);
-    } else {
-      Router.replace('/dashboard/manage-resume');
-    }
-  }, [props.id]);
-
-
-  if (!thisResumeSection) return <Loading />;
+  return null;
 
   return (
     <Grid container>
       <Grid item xs={12} sm={12}>
-        <Box display="flex" justifyContent="space-between" className={classes.box}>
-          <Button color="primary" onClick={() => Router.push('/dashboard/manage-resume')}>View All Sections</Button>
-          <Button color="primary" onClick={addNewExperience}>Add New Experience</Button>
-          <ExperienceFormModal />
-        </Box>
-      </Grid>
-      <Grid item xs={12} sm={12}>
         <Box className={classes.box}>
-          {thisResumeSection && <ResumeSection {...thisResumeSection} allowXpEdit />}
+          {thisResumeSection && <ResumeSection {...thisResumeSection} />}
         </Box>
       </Grid>
     </Grid>
@@ -86,19 +59,10 @@ function ResumeSectionDetail(props) {
 }
 
 const mapStateToProps = (state) => ({
-  ...state.manageResume,
-  showResumeSectionFormModal: state.manageResume.showResumeSectionFormModal,
-  resumeSections: state.manageResume.resumeSections,
-  getAllResumeSectionsLoading: state.manageResume.getAllResumeSectionsLoading,
-  getAllResumeSectionsError: state.manageResume.getAllResumeSectionsError,
-  showExperienceFormModal: state.manageResume.showExperienceFormModal,
+  
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentExperienceItemId: (id) => dispatch(Actions.manageResume.setCurrentExperienceItemId(id)),
-  setShowResumeSectionFormModal: (showModal) => dispatch(Actions.manageResume.setShowResumeSectionFormModal(showModal)),
-  getAllResumeSections: () => dispatch(Actions.manageResume.getAllResumeSections()),
-  setShowExperienceFormModal: (showModal) => dispatch(Actions.manageResume.setShowExperienceFormModal(showModal)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResumeSectionDetail);
