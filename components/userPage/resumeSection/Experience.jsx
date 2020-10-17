@@ -126,7 +126,7 @@ function Index(props) {
             <>
               <br />
               <Grid item xs={12}>
-                <Typography component="span" className={classes.linkText} onClick={() => openLink(linkUrl)}>
+                <Typography component="span" className={classes.linkText} onClick={() => openLink({linkText, linkUrl})}>
                   { linkText }
                 </Typography>
               </Grid>
@@ -150,7 +150,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  openLink: (linkUrl) => dispatch(Actions.userPage.setUserLinkUrl(linkUrl)),
+  openLink: (data) => dispatch(Actions.userPage.setUserLinkData(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

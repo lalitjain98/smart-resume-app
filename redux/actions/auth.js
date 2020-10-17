@@ -8,6 +8,7 @@ const attemptLogin = (email, password) => async (dispatch) => {
     dispatch({ type: auth.LOGIN });
 
     const res = await api('/auth/login', 'POST', { email, password });
+    console.log(res);
     if (res && res.status >= 200 && res.status < 400) {
       console.log(res);
       const { token } = res.data;

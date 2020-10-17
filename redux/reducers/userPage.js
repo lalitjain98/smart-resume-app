@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
   case userPage.SET_USER_LINK:
     return {
       ...state,
-      userLinkUrl: action.payload,
+      userLinkData: action.payload,
     };
   default:
     return state;

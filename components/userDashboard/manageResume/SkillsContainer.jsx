@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     padding: theme.spacing(1),
     margin: `${theme.spacing(1)}px 0`,
-    border: `1px solid ${theme.palette.primary.main}`,
+    // border: `1px solid ${theme.palette.primary.main}`,
     [theme.breakpoints.up('sm')]: {
       margin: theme.spacing(2),
       padding: theme.spacing(2),
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     display: 'flex',
     width: '100%',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     flexWrap: 'wrap',
   },
 }));

@@ -8,37 +8,36 @@ const Experience = Yup.object({
     .required('Required'),
   subtitle: Yup.string()
     .min(3, 'Must be 3 characters or more')
-    .max(100, 'Must be 100 characters or less')
-    .required('Required'),
+    .max(100, 'Must be 100 characters or less'),
   description: Yup.string()
-    .min(50, 'Must be 50 characters or more')
-    .max(1000, 'Must be 1000 characters or less')
-    .required('Required'),
+    // .min(50, 'Must be 50 characters or more')
+    .max(1000, 'Must be 1000 characters or less'),
   startDate: Yup.string()
     .required('Required'),
+  isPresent: Yup.boolean(),
   endDate: Yup.string()
-    .required('Required')
+    // .required('Required')
     .test(
       'endGreaterThanEqualToStart',
       'End Date should not be less than Start Date',
       function endDateNotLessThanStartDate(value) {
+        if (this.parent.isPresent) return true;
+
         const sd = moment(this.parent.startDate);
         // console.log(sd, value, sd.diff(moment(value)));
         return sd.diff(moment(value)) < 0;
       },
     ),
   linkText: Yup.string()
-    .min(3, 'Must be 3 characters or more')
     .max(100, 'Must be 100 characters or less'),
   // .required('Required'),
   linkUrl: Yup.string()
-    .min(3, 'Must be 3 characters or more')
     .max(100, 'Must be 100 characters or less')
     .url('Must be valid URL')
     .test(
       'startWithHttps',
       'Must start with https:// or http://',
-      (value) => value && (value.startsWith('http://') || value.startsWith('https://')),
+      (value) => !value || (value && (value.startsWith('http://') || value.startsWith('https://'))),
     ),
   // .required('Required'),
 

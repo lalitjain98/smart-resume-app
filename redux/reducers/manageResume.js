@@ -79,7 +79,7 @@ export default (state = initialState, action) => {
   case manageResume.UPDATE_RESUME_SECTION_SUCCESS:
     return (() => {
       const rsCopy = [...state.resumeSections];
-      const editIndex = rsCopy.findIndex((item) => item.id === state.currentResumeSectionItemId);
+      const editIndex = rsCopy.findIndex((item) => item.id == state.currentResumeSectionItemId);
       console.log('Before Edit', rsCopy[editIndex]);
       rsCopy[editIndex] = {
         ...rsCopy[editIndex],
@@ -123,9 +123,8 @@ export default (state = initialState, action) => {
       console.log(state.currentResumeSectionItemId);
       const rsIndex = rsCopy.findIndex((item) => item.id == state.currentResumeSectionItemId);
       console.log('Before Create Exp', rsIndex, rsCopy[rsIndex]);
-
       rsCopy[rsIndex].experiences = [
-        ...rsCopy[rsIndex].experiences,
+        ...(rsCopy[rsIndex].experiences || []),
         action.payload,
       ];
 
@@ -251,7 +250,8 @@ export default (state = initialState, action) => {
   case manageResume.UPDATE_SKILL_SUCCESS:
     return (() => {
       const rsCopy = [...state.skills];
-      const editIndex = rsCopy.findIndex((item) => item.id === state.currentSkillItemId);
+      console.log(rsCopy, state.currentSkillItemId);
+      const editIndex = rsCopy.findIndex((item) => item.id == state.currentSkillItemId);
       console.log('Before Edit', rsCopy[editIndex]);
       rsCopy[editIndex] = {
         ...rsCopy[editIndex],

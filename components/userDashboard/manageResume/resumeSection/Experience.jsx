@@ -86,7 +86,7 @@ function Index(props) {
   const classes = useStyles();
   const {
     allowEdit = false, wrapperComponent: WrapperComponent, wrapperComponentProps = {}, nextSibling,
-    title, subtitle, startDate, endDate, description='', linkUrl, linkText, grade, maxGrade
+    title, subtitle, startDate, endDate, description='', linkUrl, linkText, grade, maxGrade, isPresent,
   } = props;
 
   const editExperience = (e) => {
@@ -113,7 +113,11 @@ function Index(props) {
                 {moment(startDate).format('MMM, YYYY')}
               </Typography>
               {
-                endDate && (
+                isPresent ? (
+                  <Typography component={'span'} className={classes.content}>
+                    {` - Present`}
+                  </Typography>
+                ) : (
                   <Typography component={'span'} className={classes.content}>
                     {` - ${moment(endDate).format('MMM, YYYY')}`}
                   </Typography>

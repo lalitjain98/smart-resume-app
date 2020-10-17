@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
 const LinkModal = (props) => {
   const classes = useStyles();
   const [isLoaded, setIsLoaded] = React.useState(false);
-  const { linkUrl, open, handleClose } = props;
+  const { linkText, linkUrl, open, handleClose } = props;
   
 
   const theme = useTheme();
@@ -104,7 +104,7 @@ const LinkModal = (props) => {
     >
       <DialogTitle id="alert-dialog-slide-title">
         <Typography className={classes.dialogTitle}>
-          { props.currentResumeSectionItemId ? 'Edit Section' : 'Add New Section' }
+          { linkText }
         </Typography>
         <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
           <CloseIcon />
@@ -141,12 +141,13 @@ LinkModal.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  open: !!state.userPage.userLinkUrl,
-  linkUrl: state.userPage.userLinkUrl,
+  open: !!state.userPage?.userLinkData?.linkUrl,
+  linkUrl: state.userPage?.userLinkData?.linkUrl,
+  linkText: state.userPage?.userLinkData?.linkText,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  handleClose: () => dispatch(Actions.userPage.setUserLinkUrl(null)),
+  handleClose: () => dispatch(Actions.userPage.setUserLinkData(null)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LinkModal);

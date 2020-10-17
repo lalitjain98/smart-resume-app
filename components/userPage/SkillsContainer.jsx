@@ -14,6 +14,11 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Loading from '../common/Loading';
 import Skill from './Skill';
+// import SkillsVisualization from './charts/SkillsVisualizationHorizontalBar';
+// import SkillsVisualization from './charts/SkillsVisualizationDoughnut';
+// import SkillsVisualization from './charts/SkillsVisualizationRadar';
+// import SkillsVisualization from './charts/SkillsVisualizationPolar';
+import SkillsVisualization from './charts/SkillsVisualizationPie';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -76,6 +81,12 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     flexWrap: 'wrap',
   },
+  chartWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
 }));
 
 function SkillsContainer(props) {
@@ -100,21 +111,26 @@ function SkillsContainer(props) {
             skills && skills.length === 0 ? (
               <Grid item xs={12} className={classes.emptyListText}>
                 <Box textAlign="center">
-                  {/* No Skills Added Yet! */}
+                  No Skills Added Yet!
                 </Box>
               </Grid>
             )
               : (
-                <Box className={classes.listContainer}>
-                  {
-                    (skills).map((item) => (
-                      <Skill
-                        key={item.id}
-                        {...item}
-                      />
-                    ))
-                  }
-                </Box>
+                <>
+                  <Box className={classes.chartWrapper}>
+                    <SkillsVisualization skills={skills} />
+                  </Box>
+                  {/* <Box className={classes.listContainer}>
+                    {
+                      (skills).map((item) => (
+                        <Skill
+                          key={item.id}
+                          {...item}
+                        />
+                      ))
+                    }
+                  </Box> */}
+                </>
               )
           }
         </Grid>

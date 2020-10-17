@@ -35,14 +35,18 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     // color: 'gold',
     width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '200px',
+    },
     // backgroundColor: theme.palette.secondary.dark,
     // borderRadius: theme.spacing(3),
+
   },
   title: {
 
   },
   rating: {
-
+    color: theme.palette.primary.dark,
   },
   edit: {
     position: 'absolute',

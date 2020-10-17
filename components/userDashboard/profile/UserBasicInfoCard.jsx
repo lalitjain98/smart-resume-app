@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   grid: {
-    margin: theme.spacing(1),
+    padding: theme.spacing(1),
     position: 'relative',
   },
   title: {
@@ -65,9 +65,14 @@ const useStyles = makeStyles((theme) => ({
     right: `-${theme.spacing(4)}px !important`,
   },
   userAvatar: {
-    margin: `${theme.spacing(1)}px auto`,
-    width: theme.spacing(10),
-    height: theme.spacing(10),
+    margin: `-${theme.spacing(1)}px auto`,
+    width: theme.spacing(12),
+    height: theme.spacing(12),
+    [theme.breakpoints.up('sm')]: {
+      margin: `-${theme.spacing(2)}px auto`,
+      width: theme.spacing(14),
+      height: theme.spacing(14),
+    },
     // backgroundImage: ({ avatarUrl }) => (avatarUrl ? `url(${avatarUrl})` : 'transparent'),
     // backgroundPosition: 'center 25%',
     // backgroundRepeat: 'no-repeat',
@@ -112,7 +117,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   username: {
-    color: theme.palette.primary.main,
+    color: `${theme.palette.primary.main} !important`,
+    '& > a, & > a:visited' : {
+      color: 'inherit !important',
+    },
   },
 }));
 

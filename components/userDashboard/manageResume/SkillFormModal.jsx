@@ -58,7 +58,7 @@ const AddNewSkillModal = (props) => {
   const [title, setTitle] = React.useState('');
   const [rating, setRating] = React.useState(3);
 
-  const { open, setOpen, save } = props;
+  const { open, setOpen, save, setCurrentSkillItemId } = props;
   const handleClose = () => setOpen(false);
 
   const handleSubmit = (e) => {
@@ -88,7 +88,7 @@ const AddNewSkillModal = (props) => {
       fullScreen={fullScreen}
       open={open}
       TransitionComponent={Transition}
-      keepMounted
+      // keepMounted
       onClose={handleClose}
       className={classes.dialog}
       aria-labelledby="alert-dialog-slide-title"
@@ -153,8 +153,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  setCurrentSkillItemId: (id) => dispatch(Actions.manageResume.setCurrentSkillItemId(id)),
   setOpen: (showModal) => dispatch(Actions.manageResume.setShowSkillFormModal(showModal)),
   save: (data) => dispatch(Actions.manageResume.saveSkill(data)),
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(AddNewSkillModal);

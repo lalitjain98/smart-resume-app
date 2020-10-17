@@ -114,11 +114,11 @@ function Index(props) {
               <Divider />
               <Grid className={classnames(classes.gridItem, classes.justified)} item xs={12}>
                 {
-                  user.aboutMe ? (
-                    <Typography variant="subtitle2" className={classes.withIcon}>
-                      {user.aboutMe}
+                  user.aboutMe ? user.aboutMe.split('\n').map((line, index) => (
+                    <Typography key={index} variant="subtitle2" className={classes.withIcon}>
+                      {line}
                     </Typography>
-                  ) : (
+                  )) : (
                     <EmptyContentText customText={"Brand yourself here!"}/>
                   )
                 }

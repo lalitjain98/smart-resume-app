@@ -28,14 +28,14 @@ const loadUserByUsername = (username) => async (dispatch, getState) => {
   }
 };
 
-const setUserLinkUrl = (link) => dispatch => {
+const setUserLinkData = (linkData) => dispatch => {
   dispatch({
     type: userPage.SET_USER_LINK,
-    payload: link,
-  })
-}
+    payload: linkData,
+  });
+};
 
 export default {
   loadUserByUsername,
-  setUserLinkUrl,
+  setUserLinkData,
 };
