@@ -7,7 +7,8 @@ const withBabelMinify = require('next-babel-minify')({
 require('dotenv').config();
 
 const envObj = {
-  PORT: process.env.PORT,
+  PORT: process.env.NEXT_PUBLIC_PORT,
+  API_HOSTNAME: process.env.NEXT_PUBLIC_API_HOSTNAME,
 };
 
 module.exports = withCSS(
